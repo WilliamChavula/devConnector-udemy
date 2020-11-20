@@ -1,2 +1,0 @@
-mongodb user: william_chavula
-mongodb pass: PxMZpF8TnSALd1M4
