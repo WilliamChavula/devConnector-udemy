@@ -3,6 +3,9 @@ const connectDB = require('./config/db');
 
 const app = express();
 
+// Middlewares
+app.use(express.json({ extended: false}));
+
 // Routes
 const userRoutes = require('./routes/api/users');
 const authRoutes = require('./routes/api/auth');
