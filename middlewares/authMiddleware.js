@@ -1,13 +1,22 @@
 const jwt = require('jsonwebtoken');
 const config = require('config');
 
-module.exports = function(req, res, next) {
+module.exports = function (req, res, next) {
     // Get token from the headers
     const token = req.header('x-auth-token');
 
     // check if no token
     if (!token) {
-        return res.status(401).json({ errors: [{ msg: "Account does not have permission to view requested page" }]})
+        return res
+            .status(401)
+            .json({
+                errors: [
+                    {
+                        msg:
+                            'Account does not have permission to access requested resources',
+                    },
+                ],
+            });
     }
 
     // Verify token
@@ -16,6 +25,6 @@ module.exports = function(req, res, next) {
         req.user = decoded.user;
         next();
     } catch (err) {
-        res.status(401).json({ errors: [{ msg: "Token is not valid" }]});
+        res.status(401).json({ errors: [{ msg: 'Token is not valid' }] });
     }
-}
+};
