@@ -29,7 +29,7 @@ router.get('/me', auth, async (req, res) => {
     }
 });
 
-// @route   Post api/profile/me
+// @route   Post api/profile
 // @desc    create or update user's profile route
 // @access  private
 router.post(
@@ -84,9 +84,10 @@ router.post(
 
         try {
             let profile = await Profile.findOne({ user: req.user.id });
+
             if (profile) {
                 // update profile
-                profile = Profile.findByIdAndUpdate(
+                profile = await Profile.findOneAndUpdate(
                     { user: req.user.id },
                     { $set: profileFields },
                     { new: true }
