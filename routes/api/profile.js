@@ -5,6 +5,7 @@ const { check, validationResult } = require('express-validator'); // trying a di
 const auth = require('../../middlewares/authMiddleware');
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
+const POST = require('../../models/Post');
 
 const express = require('express');
 const router = express.Router();
@@ -29,7 +30,7 @@ router.get('/me', auth, async (req, res) => {
     }
 });
 
-// @route   Post api/profile/me
+// @route   Post api/profile
 // @desc    create or update user's profile route
 // @access  private
 router.post(
@@ -84,9 +85,10 @@ router.post(
 
         try {
             let profile = await Profile.findOne({ user: req.user.id });
+
             if (profile) {
                 // update profile
-                profile = Profile.findByIdAndUpdate(
+                profile = await Profile.findOneAndUpdate(
                     { user: req.user.id },
                     { $set: profileFields },
                     { new: true }
@@ -149,6 +151,9 @@ router.get('/user/:user_id', async (req, res) => {
 
 router.delete('/', auth, async (req, res) => {
     try {
+        // remove user's posts
+        await Post.deleteMany({ user: req.user.id });
+
         // Remove profile
         await Profile.findOneAndRemove({ user: req.user.id });
 
