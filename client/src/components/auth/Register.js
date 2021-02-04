@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { setAlert } from '../../actions/alert';
+import { register } from '../../actions/auth';
 import PropTypes from 'prop-types';
 
-const Register = ({ setAlert }) => {
+const Register = ({ setAlert, register, isAuthenticated }) => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         password: '',
         password2: '',
     });
+
+    const { name, email, password, password2 } = formData;
 
     const onUserRegistration = e =>
         setFormData({
@@ -23,11 +26,14 @@ const Register = ({ setAlert }) => {
         if (password !== password2) {
             setAlert('Password do not match', 'danger');
         } else {
-            console.log(formData);
+            register({ name, email, password });
         }
     };
 
-    const { name, email, password, password2 } = formData;
+    if (isAuthenticated) {
+        return <Redirect to="/dashboard" />;
+    }
+
     return (
         <>
             <h1 className="large text-primary">Sign In</h1>
@@ -42,7 +48,6 @@ const Register = ({ setAlert }) => {
                         name="name"
                         value={name}
                         onChange={onUserRegistration}
-                        required
                     />
                 </div>
                 <div className="form-group">
@@ -65,7 +70,6 @@ const Register = ({ setAlert }) => {
                         name="password"
                         value={password}
                         onChange={onUserRegistration}
-                        minLength="6"
                     />
                 </div>
                 <div className="form-group">
@@ -75,7 +79,6 @@ const Register = ({ setAlert }) => {
                         name="password2"
                         value={password2}
                         onChange={onUserRegistration}
-                        minLength="6"
                     />
                 </div>
                 <input
@@ -93,6 +96,12 @@ const Register = ({ setAlert }) => {
 
 Register.propTypes = {
     setAlert: PropTypes.func.isRequired,
+    register: PropTypes.func.isRequired,
+    isAuthenticated: PropTypes.bool,
 };
 
-export default connect(null, { setAlert })(Register);
+const mapStateToProps = state => ({
+    isAuthenticated: state.auth.isAuthenticated,
+});
+
+export default connect(mapStateToProps, { setAlert, register })(Register);
